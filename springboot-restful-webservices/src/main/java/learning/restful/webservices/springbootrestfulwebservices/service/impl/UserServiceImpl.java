@@ -1,6 +1,8 @@
 package learning.restful.webservices.springbootrestfulwebservices.service.impl;
 
+import learning.restful.webservices.springbootrestfulwebservices.dto.UserDTO;
 import learning.restful.webservices.springbootrestfulwebservices.entity.User;
+import learning.restful.webservices.springbootrestfulwebservices.mapper.UserMapper;
 import learning.restful.webservices.springbootrestfulwebservices.registory.UserRepository;
 import learning.restful.webservices.springbootrestfulwebservices.service.UserService;
 import lombok.AllArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -18,30 +21,35 @@ public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDTO createUser(UserDTO userDto) {
+        //convert UserDto into User JPA Entity
+        User user = UserMapper.mapToUser(userDto);
+        User savedUser = userRepository.save(user);
+        //Convert User JPA Entity to UserDto
+        UserDTO  savedUserDto = UserMapper.maptoUserDTO(savedUser);
+        return savedUserDto;
     }
 
     @Override
-    public User getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
        Optional<User> user = userRepository.findById(id);
-       return user.get();
+       return UserMapper.maptoUserDTO(user.get());
     }
 
     @Override
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUser() {
+        return userRepository.findAll().stream().map(UserMapper::maptoUserDTO).collect(Collectors.toList());
     }
 
     @Override
-    public User upadateUser(User user) {
-        User existinglUser = userRepository.findById(user.getId()).get();
-        existinglUser.setFirstName(user.getFirstName());
-        existinglUser.setLastName(user.getLastName());
-        existinglUser.setEmail(user.getEmail());
+    public UserDTO upadateUser(UserDTO userDto) {
+        User existinglUser = userRepository.findById(userDto.getId()).get();
+        existinglUser.setFirstName(userDto.getFirstName());
+        existinglUser.setLastName(userDto.getLastName());
+        existinglUser.setEmail(userDto.getEmail());
 
         User savedUser = userRepository.save(existinglUser);
-        return savedUser;
+        return UserMapper.maptoUserDTO(savedUser);
     }
 
     @Override
