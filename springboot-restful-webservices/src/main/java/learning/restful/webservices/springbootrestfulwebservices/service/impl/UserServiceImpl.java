@@ -2,6 +2,7 @@ package learning.restful.webservices.springbootrestfulwebservices.service.impl;
 
 import learning.restful.webservices.springbootrestfulwebservices.dto.UserDTO;
 import learning.restful.webservices.springbootrestfulwebservices.entity.User;
+import learning.restful.webservices.springbootrestfulwebservices.exception.EmailAlreadyExistException;
 import learning.restful.webservices.springbootrestfulwebservices.exception.ResourceNotFoundException;
 import learning.restful.webservices.springbootrestfulwebservices.mapper.AutoUserMapper;
 import learning.restful.webservices.springbootrestfulwebservices.mapper.UserMapper;
@@ -32,6 +33,10 @@ public class UserServiceImpl implements UserService {
     //  User user = UserMapper.mapToUser(userDto);
 //      User user = modelMapper.map(userDto,User.class);
         User user = AutoUserMapper.MAPPER.mapToUser(userDto);
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+        if(optionalUser.isPresent()){
+            throw new EmailAlreadyExistException("Email Already Exist For User");
+        }
         User savedUser = userRepository.save(user);
         //Convert User JPA Entity to UserDto
 //      UserDTO  savedUserDto = UserMapper.maptoUserDTO(savedUser);
