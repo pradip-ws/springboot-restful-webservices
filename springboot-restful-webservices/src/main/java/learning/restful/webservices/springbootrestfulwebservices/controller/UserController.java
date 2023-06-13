@@ -1,5 +1,6 @@
 package learning.restful.webservices.springbootrestfulwebservices.controller;
 
+import jakarta.validation.Valid;
 import learning.restful.webservices.springbootrestfulwebservices.dto.UserDTO;
 import learning.restful.webservices.springbootrestfulwebservices.entity.User;
 import learning.restful.webservices.springbootrestfulwebservices.exception.ErrorDetail;
@@ -24,7 +25,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping("users")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user){
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO user){
         return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @PutMapping("users/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long userId,@RequestBody UserDTO user){
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long userId,@Valid @RequestBody UserDTO user){
         user.setId(userId);
         return ResponseEntity.ok(userService.upadateUser(user));
     }
